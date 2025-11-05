@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test Translation</title>
+</head>
+<body>
+<h2>Test Translation</h2>
+
+<input id="inputText" style="width:400px;" placeholder="Enter text..." />
+<button onclick="translateText()">Translate</button>
+
+<h3>Result:</h3>
+<div id="output" style="background:#f4f4f4; padding:10px; width:400px;">
+Translation will appear here...
+</div>
+
+<script>
+async function translateText() {
+    let text = document.getElementById("inputText").value.trim();
+    let output = document.getElementById("output");
+    if (!text) {
+        output.innerHTML = "Please enter text ❗";
+        return;
+    }
+
+    output.innerHTML = "Translating ⏳...";
+
+    try {
+        let response = await fetch("/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text })
+        });
+
+        let data = await response.json();
+
+        if (data.translated_text) {
+            output.innerHTML = data.translated_text;
+        } else {
+            output.innerHTML = "⚠ Error: " + (data.error || "Unknown error");
+        }
+    } catch {
+        output.innerHTML = "❌ Server error";
+    }
+}
+</script>
+
+</body>
+</html>
